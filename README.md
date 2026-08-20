@@ -1,5 +1,4 @@
-# real-estate-price-prediction
-Property price prediction pipeline using open real estate data (Python, pandas, scikit-learn, XGBoost)
+
 # Montpellier Apartment Price Prediction
 
 An automated valuation model (AVM) for apartments in Montpellier, France, built on real government transaction data. Give it a street address, apartment surface, and room count — it returns an estimated market price.
