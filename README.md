@@ -6,6 +6,15 @@ An automated valuation model (AVM) for apartments in Montpellier, France, built 
 
 Predicts apartment sale prices from a real street address using structural and location features, and investigates *where and why* the model's predictions fail — using domain knowledge of the local real estate market to interpret the errors, not just report them.
 
+## Where this fits (and where it doesn't)
+
+Statistical valuation like this trades precision for speed and scale. It's a good fit for:
+- **Banks/lenders** — flagging whether a mortgage request's asking price looks reasonable, at volume, in seconds.
+- **Agencies** — triaging many new listings quickly to prioritize which need in-depth broker attention.
+- **Developers** — early feasibility screening on a potential acquisition.
+
+It's a weaker fit for a single private buyer evaluating one specific apartment they have time to research in person — a broker pulling recent sales from that exact building, verified by a site visit, will outperform a citywide statistical model for that one address. This mirrors how real AVMs (Zillow's Zestimate, MeilleursAgents) are actually positioned: a fast starting point, not a replacement for local expertise.
+
 ## Try it
 
 ```python
