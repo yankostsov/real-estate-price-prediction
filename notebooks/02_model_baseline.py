@@ -149,5 +149,5 @@ def estimate_price_by_address(address, surface, rooms, year=2025):
     return price
 # %%
 # %%
-estimate_price_by_address("02 Rue de Syracuse, Montpellier", surface=45, rooms=2)
+estimate_price_by_address("52 Rue de Syracuse, Montpellier", surface=45, rooms=2)
 # %%
