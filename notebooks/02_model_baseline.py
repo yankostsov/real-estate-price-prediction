@@ -1,10 +1,10 @@
 # %%
+# Load the cleaned dataset and split it into training and test sets
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 df = pd.read_csv('../data/processed/montpellier_apartments_clean.csv')
 
-# Features the model will learn from
 feature_columns = ['surface_reelle_bati', 'nombre_pieces_principales',
                     'code_postal', 'longitude', 'latitude', 'year']
 X = df[feature_columns]
@@ -13,8 +13,9 @@ y = df['valeur_fonciere']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 print('Train:', len(X_train), 'Test:', len(X_test))
+
 # %%
-# %%
+# Train an XGBoost regressor and evaluate it on the held-out test set
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
@@ -30,28 +31,27 @@ r2 = r2_score(y_test, predictions)
 print(f'MAE:  {mae:,.0f} EUR')
 print(f'RMSE: {rmse:,.0f} EUR')
 print(f'R2:   {r2:.3f}')
-# %%
-# %%
-import pandas as pd
 
-# Which features does the model actually rely on?
+# %%
+# Check which features the model relies on most
 importance = pd.Series(model.feature_importances_, index=feature_columns).sort_values(ascending=False)
 print(importance)
 
 # %%
-# The worst individual predictions — where does the model struggle most?
+# Find the 10 individual test-set predictions with the largest errors
 results = X_test.copy()
 results['actual'] = y_test
 results['predicted'] = predictions
 results['error'] = (results['predicted'] - results['actual']).abs()
 print(results.sort_values('error', ascending=False).head(10))
+
 # %%
-# %%
-# Check the two suspicious rows against the original cleaned dataset
+# Pull the full rows (including sale date) for the two most suspicious large-error sales
 suspicious = df.loc[[3329, 4993]]
 print(suspicious)
+
 # %%
-# %%
+# Look up the exact street address of those two sales in the original raw data
 raw_2023 = pd.read_csv('../data/raw/dvf_montpellier_2023.csv')
 raw_2024 = pd.read_csv('../data/raw/dvf_montpellier_2024.csv')
 
@@ -60,8 +60,9 @@ match_2024 = raw_2024[(raw_2024['valeur_fonciere'] == 425870.0) & (raw_2024['sur
 
 print(match_2023[['adresse_numero', 'adresse_nom_voie', 'code_postal', 'date_mutation']])
 print(match_2024[['adresse_numero', 'adresse_nom_voie', 'code_postal', 'date_mutation']])
+
 # %%
-# %%
+# Save the trained model to disk so it can be reloaded without retraining
 import joblib
 import os
 
@@ -70,9 +71,7 @@ joblib.dump(model, '../models/xgboost_baseline.pkl')
 print('Model saved')
 
 # %%
-# %%
-import joblib
-
+# Reload the saved model and wrap it in a function that prices one apartment at a time
 model = joblib.load('../models/xgboost_baseline.pkl')
 
 def predict_price(surface, rooms, postal_code, longitude, latitude, year=2025):
@@ -87,7 +86,7 @@ def predict_price(surface, rooms, postal_code, longitude, latitude, year=2025):
     return model.predict(input_data)[0]
 
 # %%
-# %%
+# Sanity-check predict_price on a real, known apartment (Yan's own)
 your_apartment = predict_price(
     surface=45,
     rooms=2,
@@ -98,8 +97,9 @@ your_apartment = predict_price(
 )
 print(f'Estimated price: {your_apartment:,.0f} EUR')
 print(f'Price per sqm: {your_apartment/45:,.0f} EUR/m2')
+
 # %%
-# %%
+# Convert a real street address into coordinates + postal code, using France's free geocoding API
 import requests
 
 def geocode_address(address):
@@ -123,10 +123,12 @@ def geocode_address(address):
         'confidence': feature['properties']['score']
     }
 
-# Quick test
+# Quick test to confirm the geocoder is working
 test_location = geocode_address("Place de la Comedie, Montpellier")
 print(test_location)
+
 # %%
+# Combine geocoding + prediction: estimate a price from a street address alone
 def estimate_price_by_address(address, surface, rooms, year=2025):
     location = geocode_address(address)
 
@@ -147,7 +149,7 @@ def estimate_price_by_address(address, surface, rooms, year=2025):
     print(f"Price per sqm: {price/surface:,.0f} EUR/m2")
 
     return price
+
 # %%
-# %%
+# Final end-to-end test: address in, price out
 estimate_price_by_address("52 Rue de Syracuse, Montpellier", surface=45, rooms=2)
-# %%
