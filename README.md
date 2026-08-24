@@ -62,9 +62,12 @@ The model's largest errors cluster on large apartments (100m²+). Investigation 
 
 ```bash
 pip install -r requirements.txt
-python notebooks/01_explore_clean.py
-python notebooks/02_model_baseline.py
+cd notebooks
+python 01_explore_clean.py
+python 02_model_baseline.py
 ```
+
+Note: run these from inside the `notebooks/` folder (as shown above) — the scripts use relative paths assuming that working directory.
 
 ## Author
 
