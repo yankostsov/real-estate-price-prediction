@@ -71,4 +71,4 @@ Note: run these from inside the `notebooks/` folder (as shown above) — the scr
 
 ## Author
 
-Yan Kostsov — [LinkedIn](www.linkedin.com/in/yankostsov) — background in real estate and asset management, transitioning into applied AI/data (AI4CI Master's, Avignon Université).
+Yan Kostsov — [LinkedIn](https://www.linkedin.com/in/yankostsov) — background in real estate and asset management, transitioning into applied AI/data (AI4CI Master's, Avignon Université).
